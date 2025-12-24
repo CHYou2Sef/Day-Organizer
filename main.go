@@ -57,9 +57,20 @@ func middleware(next http.HandlerFunc) http.Handler {
 func handleTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	if r.Method == "GET" {
-		rows, _ := db.Query("SELECT id::text, title, description, priority, start_time, end_time FROM tasks")
+		rows, err := db.Query("SELECT id::text, title, description, priority, start_time, end_time FROM tasks")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		defer rows.Close()
 		tasks := []Task{}
 		for rows.Next() {
@@ -70,8 +81,16 @@ func handleTasks(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(tasks)
 	} else if r.Method == "POST" {
 		var t Task
-		json.NewDecoder(r.Body).Decode(&t)
-		db.Exec("INSERT INTO tasks (title, description, priority, start_time, end_time) VALUES ($1, $2, $3, $4, $5)", t.Title, t.Description, t.Priority, t.Start, t.End)
+		err := json.NewDecoder(r.Body).Decode(&t)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		_, err = db.Exec("INSERT INTO tasks (title, description, priority, start_time, end_time) VALUES ($1, $2, $3, $4, $5)", t.Title, t.Description, t.Priority, t.Start, t.End)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
 	}
 }
