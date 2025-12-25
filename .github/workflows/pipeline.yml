@@ -1,10 +1,10 @@
 name: DevOps Pipeline
 
-on: 
- push:
-    branches: [ "main" ]
- pull_request:
-    branches: [ "main" ]   
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build-test-security:
@@ -51,7 +51,7 @@ jobs:
       # 5. DAST (Dynamic Security Scan)
       # Spinning up the full stack to scan the frontend
       - name: Start Full Stack for DAST
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.9.0

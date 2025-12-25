@@ -36,7 +36,7 @@ npm run dev
 ### 2. Docker Compose (Recommended)
 Spin up the entire stack with one command:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:8080/tasks](http://localhost:8080/tasks)
@@ -86,6 +86,8 @@ This section tracks major fixes and security mitigations applied to the project 
 ### 🐛 Resolved Issues
 *   **Missing Next.js Modules**: Resolved by performing a full `npm install` and implementing a multi-stage Docker build to ensure dependencies are isolated from the final image.
 *   **CI/CD Test Failure (CORS)**: Corrected a mismatch in `main_test.go` where the `DELETE` method was not expected in the `Access-Control-Allow-Methods` header, which was causing the pipeline to fail.
+*   **Docker Build Error (Empty Public Directory)**: Fixed the frontend Dockerfile by adding a `.gitkeep` file to the empty `public` directory and correcting ENV format warnings (using `ENV KEY=value` instead of `ENV KEY value`).
+*   **Docker Compose Command Not Found**: Updated CI/CD pipeline from deprecated `docker-compose` to modern `docker compose` (Docker Compose V2 plugin syntax).
 
 ### 🛡️ Security Mitigations (Gosec Audit)
 The following fixes were applied to resolve vulnerabilities found during automated SAST scanning:
