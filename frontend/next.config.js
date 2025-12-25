@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Comments: Added config to handle external backend if needed
+    output: 'standalone',
     async rewrites() {
         return [
             {

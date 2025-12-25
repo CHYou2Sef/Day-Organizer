@@ -1,11 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
+	"math/big"
 	"net/http"
 	"os"
 	"time"
@@ -59,18 +60,32 @@ func main() {
 	// Register routes
 	http.Handle("/tasks", middleware(handleTasks))
 	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("active_tasks 1")) // Simple health/metrics endpoint
+		_, err := w.Write([]byte("active_tasks 1")) // Simple health/metrics endpoint
+		if err != nil {
+			log.Printf("Failed to write metrics: %v", err)
+		}
 	})
 
 	log.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	server := &http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		Handler:      nil, // Uses http.DefaultServeMux
+	}
+	log.Fatal(server.ListenAndServe())
 }
 
 // middleware logs each request and adds a request ID
 func middleware(next http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		reqID := rand.Intn(99999)
+		// G404 fix: Use crypto/rand for secure IDs
+		nBig, err := rand.Int(rand.Reader, big.NewInt(99999))
+		reqID := int64(0)
+		if err == nil {
+			reqID = nBig.Int64()
+		}
 		w.Header().Set("X-Request-ID", fmt.Sprintf("%d", reqID))
 		next(w, r)
 		log.Printf("id=%d method=%s path=%s duration=%v", reqID, r.Method, r.URL.Path, time.Since(start))
@@ -109,7 +124,9 @@ func handleTasks(w http.ResponseWriter, r *http.Request) {
 			}
 			tasks = append(tasks, t)
 		}
-		json.NewEncoder(w).Encode(tasks)
+		if err := json.NewEncoder(w).Encode(tasks); err != nil {
+			log.Printf("Encoding error: %v", err)
+		}
 
 	} else if r.Method == "POST" {
 		// Create a new task

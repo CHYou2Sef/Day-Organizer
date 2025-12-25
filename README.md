@@ -77,4 +77,21 @@ This project implements a "Shift-Left" security approach in the `pipeline.yml`:
 1. **Build & Unit Testing**: Verified for both Go and Next.js.
 2. **SAST (Static Application Security Testing)**: Uses `gosec` to find vulnerabilities in the source code.
 3. **DAST (Dynamic Application Security Testing)**: Spins up the environment using Docker Compose and uses `OWASP ZAP` to scan the active frontend for common web attacks.
-4. **Multi-Stage Builds**: Dockerfiles are optimized for small, secure production images containing only necessary binaries.
+4. **Multi-Stage Builds**: Dockerfiles are optimized for small, secure production images. The frontend leverages Next.js **Standalone Output**, creating minimal images that run without the full `node_modules` folder.
+
+## 📝 Fix History & Security Logs
+
+This section tracks major fixes and security mitigations applied to the project for future auditing and review.
+
+### 🐛 Resolved Issues
+*   **Missing Next.js Modules**: Resolved by performing a full `npm install` and implementing a multi-stage Docker build to ensure dependencies are isolated from the final image.
+*   **CI/CD Test Failure (CORS)**: Corrected a mismatch in `main_test.go` where the `DELETE` method was not expected in the `Access-Control-Allow-Methods` header, which was causing the pipeline to fail.
+
+### 🛡️ Security Mitigations (Gosec Audit)
+The following fixes were applied to resolve vulnerabilities found during automated SAST scanning:
+*   **[G404] Insecure RNG**: Replaced `math/rand` with `crypto/rand` for generating request IDs to ensure cryptographic unpredictability.
+*   **[G114] HTTP Timeout Mitigation**: Implemented a custom `http.Server` with explicit `ReadTimeout` (5s) and `WriteTimeout` (10s) to guard against Denial of Service (slow-client) attacks.
+*   **[G104] Unhandled Error Handling**: Added proper error checking for `json.Encode` and `w.Write` operations in the API handlers.
+
+## 🏷️ Version History
+- **v1.1.0**: Added Next.js Standalone optimization, fixed CI/CD CORS tests, and applied Gosec security patches.
