@@ -1,0 +1,59 @@
+name: DevOps Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build-test-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # 1. Backend Build & Test
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+      - name: Backend Build
+        run: go build -v ./...
+      - name: Backend Test
+        run: go test -v ./...
+
+      # 2. Frontend Build & Test
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package.json
+      - name: Frontend Install
+        working-directory: ./frontend
+        run: npm install
+      - name: Frontend Build
+        working-directory: ./frontend
+        run: npm run build
+
+      # 3. Security Scanning (SAST)
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+      # 4. Container Build Verification
+      - name: Build Backend Image
+        run: docker build -t day-organizer-backend .
+      - name: Build Frontend Image
+        run: docker build -t day-organizer-frontend ./frontend
+
+      # 5. DAST (Dynamic Security Scan)
+      # Spinning up the full stack to scan the frontend
+      - name: Start Full Stack for DAST
+        run: docker-compose up -d
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.9.0
+        with:
+          target: "http://localhost:3000" # Scan the frontend
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a"
+          allow_issue_writing: false
+        continue-on-error: true
