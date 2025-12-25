@@ -1,22 +1,36 @@
-version: '3.8'
+version: "3.8"
 services:
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dayorg
-    ports: ["5432:5432"]
+  # Comments: Go Backend Service
   backend:
     build: .
     ports: ["8080:8080"]
     environment:
-      DB_HOST: db
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: dayorg
-    depends_on: [db]
+      - DB_HOST=db
+      - DB_USER=user
+      - DB_PASSWORD=pass
+      - DB_NAME=dayorg
+    depends_on:
+      - db
+
+  # Comments: Next.js Frontend Service
   frontend:
     build: ./frontend
-    ports: ["80:80"]
-    depends_on: [backend]
+    ports: ["3000:3000"]
+    # Comments: Depend on backend to ensure API is available
+    depends_on:
+      - backend
+
+  # Comments: PostgreSQL Database Service
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=dayorg
+    ports: ["5432:5432"]
+    # Comments: Persistent storage for tasks
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
