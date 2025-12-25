@@ -97,7 +97,7 @@ func handleTasks(w http.ResponseWriter, r *http.Request) {
 	// Enable CORS for frontend interaction
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	if r.Method == "OPTIONS" {
@@ -143,6 +143,26 @@ func handleTasks(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
+	} else if r.Method == "PUT" {
+		// Update an existing task
+		id := r.URL.Query().Get("id")
+		if id == "" {
+			http.Error(w, "id is required", http.StatusBadRequest)
+			return
+		}
+		var t Task
+		err := json.NewDecoder(r.Body).Decode(&t)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		_, err = db.Exec("UPDATE tasks SET title=$1, description=$2, priority=$3, start_time=$4, end_time=$5 WHERE id=$6",
+			t.Title, t.Description, t.Priority, t.Start, t.End, id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 	} else if r.Method == "DELETE" {
 		// Delete a task by ID
 		id := r.URL.Query().Get("id")

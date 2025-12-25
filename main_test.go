@@ -36,7 +36,7 @@ func TestHandleTasksOPTIONS(t *testing.T) {
 			got, expectedOrigin)
 	}
 
-	expectedMethods := "GET, POST, DELETE, OPTIONS"
+	expectedMethods := "GET, POST, PUT, DELETE, OPTIONS"
 	if got := rr.Header().Get("Access-Control-Allow-Methods"); got != expectedMethods {
 		t.Errorf("handler returned unexpected Access-Control-Allow-Methods: got %v want %v",
 			got, expectedMethods)

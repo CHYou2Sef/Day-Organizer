@@ -11,9 +11,22 @@ The project follows a decoupled, containerized architecture:
 - **CI/CD**: Fully automated GitHub Actions pipeline with build, test, and security scanning (Gosec, OWASP ZAP).
 
 ## ✨ Features
-- **Modern Logic**: Full CRUD functionality for daily tasks (List, Create, Delete).
-- **Premium Aesthetics**: Interactive glassmorphism design with responsive components.
-- **DevOps Ready**:
+
+### Free Tier (Current Version)
+Perfect for **individual users, students, and trial users**:
+- ✅ **Full CRUD Operations**: Create, Read, Update, Delete tasks
+- ✅ **Priority System**: 5 levels (1-5) with color-coded visual indicators
+  - 🟢 Very Low (1) - Green
+  - 🔵 Low (2) - Blue  
+  - 🟡 Medium (3) - Yellow
+  - 🟠 High (4) - Orange
+  - 🔴 Critical (5) - Red
+- ✅ **Time Scheduling**: Set start and end times for each task
+- ✅ **Intuitive UI**: Clean, modern interface with glassmorphism design
+- ✅ **Real-time Updates**: Instant task list refresh after any operation
+- ✅ **Responsive Design**: Works seamlessly on desktop and mobile
+
+### DevOps Ready
     - **Dockerized**: Multi-stage builds for lean production images.
     - **Persistence**: Database state preserved via Docker Volumes and K8S PVCs.
     - **Security**: Automated SAST and DAST scanning.
