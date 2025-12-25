@@ -63,6 +63,20 @@ export default function Home() {
         }
     };
 
+    // Comments: Delete a task by ID
+    const handleDelete = async (id: string) => {
+        try {
+            const res = await fetch(`${API_URL}?id=${id}`, {
+                method: 'DELETE',
+            });
+            if (res.ok) {
+                fetchTasks();
+            }
+        } catch (error) {
+            console.error('Failed to delete task:', error);
+        }
+    };
+
     return (
         <main style={{ maxWidth: '800px', margin: '0 auto', padding: '4rem 2rem' }}>
             <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
@@ -143,6 +157,13 @@ export default function Home() {
                                     <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>Priority: {task.priority}</span>
                                 </div>
                             </div>
+                            <button
+                                onClick={() => task.id && handleDelete(task.id)}
+                                style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                                title="Delete Task"
+                            >
+                                🗑️
+                            </button>
                         </div>
                     ))
                 )}
