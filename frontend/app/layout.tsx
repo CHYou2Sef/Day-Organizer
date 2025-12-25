@@ -8,7 +8,7 @@ export const metadata = {
     description: 'A premium task management application',
 }
 
-// Comments: Root layout component that wraps every page in the application
+//Root layout component that wraps every page in the application
 export default function RootLayout({
     children,
 }: {
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            {/* Comments: Apply Inter font and standard layout structure */}
+            {/*Apply Inter font and standard layout structure */}
             <body className={inter.className}>{children}</body>
         </html>
     )

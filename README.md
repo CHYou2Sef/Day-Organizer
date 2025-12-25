@@ -47,9 +47,34 @@ Ensure your local cluster is running (e.g., Minikube or Docker Desktop).
 kubectl apply -f K8S/app.yml
 ```
 
+## 📁 Project Structure & DevOps Toolkit
+
+Understanding the role of each configuration file is key to the DevOps workflow of this project:
+
+### Development & Orchestration
+| File | Role | Purpose |
+| :--- | :--- | :--- |
+| `Dockerfile` | **Component Recipe** | Defines how to build the Go Backend image (base image, dependencies, compilation). |
+| `frontend/Dockerfile` | **Component Recipe** | Defines how to build the Next.js Frontend image. |
+| `docker-compose.yml` | **Orchestrator** | Managers the whole stack (App + DB) on a single machine. Ideal for local development. |
+| `K8S/app.yml` | **Production Blueprint** | Deployment manifests for Kubernetes. Handles scaling, high availability, and persistent volumes for production environments. |
+
+### Automation & Security (CI/CD)
+| File | Role | Purpose |
+| :--- | :--- | :--- |
+| `.github/workflows/pipeline.yml` | **The Inspector** | Automated GitHub Actions pipeline. Runs on every push to verify builds, run tests, and perform security scans. |
+| `main_test.go` | **Safety Net** | Go unit tests that verify backend logic and CORS configurations during the CI process. |
+
+### Configuration
+| File | Role | Purpose |
+| :--- | :--- | :--- |
+| `.gitignore` | **Filter** | Ensures temporary files (`node_modules`, `.next`, binaries) aren't tracked by Git, keeping the repository clean. |
+| `go.mod / go.sum` | **Dependency Lock** | Manages backend libraries and ensures version consistency. |
+| `frontend/package.json` | **Dependency Lock** | Manages frontend libraries and scripts. |
+
 ## 🛡️ Security & Quality
-This project implements a robust CI/CD pipeline:
-1. **Linting & Formatting**: Go and TypeScript verification.
-2. **SAST**: `gosec` for static analysis of Go code.
-3. **DAST**: `OWASP ZAP` baseline scan on the running application.
-4. **Build Verification**: Multi-stage Docker builds are verified on every push.
+This project implements a "Shift-Left" security approach in the `pipeline.yml`:
+1. **Build & Unit Testing**: Verified for both Go and Next.js.
+2. **SAST (Static Application Security Testing)**: Uses `gosec` to find vulnerabilities in the source code.
+3. **DAST (Dynamic Application Security Testing)**: Spins up the environment using Docker Compose and uses `OWASP ZAP` to scan the active frontend for common web attacks.
+4. **Multi-Stage Builds**: Dockerfiles are optimized for small, secure production images containing only necessary binaries.

@@ -1,0 +1,40 @@
+# OS files
+.DS_Store
+Thumbs.db
+db.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Go files
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# Node.js files
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnp*
+frontend/.pnp.js
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Docker files
+.docker-temp/
