@@ -1,5 +1,5 @@
 # Comments: Build stage for the Go application
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 WORKDIR /app
 # Comments: Copy dependency files first to leverage Docker layer caching
 COPY go.mod go.sum* ./

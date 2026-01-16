@@ -19,6 +19,29 @@ services:
     depends_on:
       - backend
 
+  # Observability: Prometheus
+  # Collects metrics from the backend
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      # Mount our custom configuration file
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" # Expose web UI
+    depends_on:
+      - backend
+
+  # Observability: Grafana
+  # Visualizes metrics collected by Prometheus
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Default password for demo purposes
+    ports:
+      - "3000:3001" # Host port 3000 is taken by frontend, mapping to 3001
+    depends_on:
+      - prometheus
+
   # Comments: PostgreSQL Database Service
   db:
     image: postgres:alpine

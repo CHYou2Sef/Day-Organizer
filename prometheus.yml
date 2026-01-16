@@ -1,0 +1,15 @@
+# Prometheus Configuration
+# This file tells Prometheus where to find the metrics to scrape.
+
+global:
+  scrape_interval: 15s # How often to scrape targets (default is 1m)
+
+scrape_configs:
+  # Job for the Go Backend
+  - job_name: "day-organizer-backend"
+
+    # The 'static_configs' list the specific targets to scrape.
+    static_configs:
+      # We use 'backend:8080' because in Docker Compose, services can reach each other
+      # by their service name. The backend exposes metrics at /metrics by default.
+      - targets: ["backend:8080"]
