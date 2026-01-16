@@ -8,6 +8,7 @@ The project follows a decoupled, containerized architecture:
 - **Backend**: High-performance Go (Golang) REST API.
 - **Database**: Persistent PostgreSQL storage.
 - **Orchestration**: Docker Compose for development and Kubernetes for production.
+- **Observability**: Prometheus for metrics collection and Grafana for visualization.
 - **CI/CD**: Fully automated GitHub Actions pipeline with build, test, and security scanning (Gosec, OWASP ZAP).
 
 ## ✨ Features
@@ -30,7 +31,14 @@ Perfect for **individual users, students, and trial users**:
     - **Dockerized**: Multi-stage builds for lean production images.
     - **Persistence**: Database state preserved via Docker Volumes and K8S PVCs.
     - **Security**: Automated SAST and DAST scanning.
-    - **Observability**: Built-in `/metrics` endpoint for monitoring.
+    - **Observability**: Prometheus metrics and Grafana dashboards.
+
+### Observability Stack
+- **Prometheus**: Scrapes metrics from the backend (`/metrics`) every 15s.
+- **Grafana**: Visualizes request rates, latencies, and active tasks.
+- **Custom Metrics**:
+  - `http_request_duration_seconds`: Histogram of request latency.
+  - `dayorg_active_tasks_count`: Gauge of active tasks.
 
 ## 🚀 Quick Start
 
@@ -54,11 +62,28 @@ docker compose up --build
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:8080/tasks](http://localhost:8080/tasks)
 
-### 3. Kubernetes Deployment
-Ensure your local cluster is running (e.g., Minikube or Docker Desktop).
-```bash
-kubectl apply -f K8S/app.yml
+### 3. Kubernetes Deployment (with Observability)
+Ensure your local cluster is running (e.g., Docker Desktop or Minikube).
+
+**Automated Deployment Script (Recommended)**:
+```powershell
+./test-k8s-observability.ps1
 ```
+This script builds the latest photos, applies all manifests, and shows you the access URLs.
+
+**Manual Deployment**:
+```bash
+# Apply App
+kubectl apply -f K8S/app.yml
+
+# Apply Observability Stack
+kubectl apply -f K8S/observability.yml
+```
+
+**Access Points**:
+- Frontend: http://localhost:30000
+- Grafana: http://localhost:30001 (User: `admin`, Pass: `admin`)
+- Prometheus: http://localhost:30090
 
 ## 📁 Project Structure & DevOps Toolkit
 
@@ -110,3 +135,4 @@ The following fixes were applied to resolve vulnerabilities found during automat
 
 ## 🏷️ Version History
 - **v1.1.0**: Added Next.js Standalone optimization, fixed CI/CD CORS tests, and applied Gosec security patches.
+- **v1.2.0**: Implemented Observability stack (Prometheus & Grafana) and full Kubernetes deployment manifests.

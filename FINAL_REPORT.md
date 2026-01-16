@@ -22,9 +22,16 @@ The "Day Organizer" application follows a **modern, decoupled, containerized 3-t
     *   `crypto/rand`: For secure ID generation.
 
 ## 3. Observability
-*   **Current State**: The backend currently exposes a basic `/metrics` endpoint that returns a simple health check status.
-*   **Logging**: structured logging is implemented via middleware to track request IDs, methods, paths, and duration.
-*   **Planned Improvements**: We are implementing a robust observability stack using **Prometheus** (for metric collection) and **Grafana** (for visualization) to monitor system performance, request latency, and error rates in real-time.
+*   **Implemented Solution**: We have deployed a complete observability stack using **Prometheus** and **Grafana**.
+*   **Metrics Collection**:
+    *   **Prometheus**: Configured to scrape the backend's `/metrics` endpoint every 15 seconds.
+    *   **Go Instrumentation**: The backend uses the `prometheus/client_golang` library to expose standard Go metrics and custom business metrics.
+    *   **Custom Metrics**:
+        *   `http_request_duration_seconds`: Tracks API latency distribution.
+        *   `dayorg_active_tasks_count`: Real-time gauge of active tasks.
+*   **Visualization**:
+    *   **Grafana**: Connected to Prometheus as a data source. Dashboards can be created to visualize request throughput, error rates, and system health.
+    *   **Access**: Exposed in Kubernetes via NodePort 30001.
 
 ## 4. Security Measures
 The project adopts a **Shift-Left Security** approach:
